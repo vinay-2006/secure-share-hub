@@ -1,17 +1,26 @@
 # Secure Share Hub
 
-A full-stack secure file sharing application with end-to-end encryption, access control, and activity tracking.
+[![Frontend CI](https://github.com/vinay-2006/secure-share-hub/workflows/Frontend%20CI/badge.svg)](https://github.com/vinay-2006/secure-share-hub/actions/workflows/frontend-ci.yml)
+[![Backend CI](https://github.com/vinay-2006/secure-share-hub/workflows/Backend%20CI/badge.svg)](https://github.com/vinay-2006/secure-share-hub/actions/workflows/backend-ci.yml)
+[![CodeQL](https://github.com/vinay-2006/secure-share-hub/workflows/CodeQL/badge.svg)](https://github.com/vinay-2006/secure-share-hub/actions/workflows/codeql.yml)
+[![Deploy](https://github.com/vinay-2006/secure-share-hub/workflows/Deploy/badge.svg)](https://github.com/vinay-2006/secure-share-hub/actions/workflows/deploy.yml)
+
+A production-ready, full-stack secure file sharing application with end-to-end encryption, access control, and activity tracking.
 
 ## Features
 
-- 🔐 **Secure Authentication** - JWT-based authentication with role-based access control
-- 📁 **File Sharing** - Upload and share files with unique access tokens
+- 🔐 **Secure Authentication** - JWT-based authentication with role-based access control and refresh tokens
+- 📁 **File Sharing** - Upload and share files with unique access tokens and comprehensive validation
 - ⏰ **Expiration Control** - Set automatic expiration times for shared files
 - 📊 **Download Limits** - Control the number of times a file can be downloaded
 - 🔒 **Access Revocation** - Revoke access to shared files at any time
 - 📈 **Activity Tracking** - Monitor all file access and download activities
 - 👥 **Admin Dashboard** - Comprehensive admin panel for managing users and files
 - 🎨 **Modern UI** - Beautiful, responsive interface built with React and Tailwind CSS
+- 🛡️ **Security First** - Rate limiting, input validation, secure file upload, and comprehensive security headers
+- 📝 **File Validation** - Client and server-side file type, size, and content validation
+- 🖼️ **Image Preview** - Preview images before uploading
+- ⚡ **CI/CD Pipeline** - Automated testing, linting, and deployment
 
 ## Technologies Used
 
@@ -24,6 +33,8 @@ A full-stack secure file sharing application with end-to-end encryption, access 
 - **React Router** - Client-side routing
 - **Axios** - HTTP client
 - **Framer Motion** - Animations
+- **Vitest** - Testing framework
+- **React Query** - Data fetching and caching
 
 ### Backend
 - **Node.js** - Runtime environment
@@ -35,6 +46,10 @@ A full-stack secure file sharing application with end-to-end encryption, access 
 - **Multer** - File upload handling
 - **Helmet** - Security headers
 - **CORS** - Cross-origin resource sharing
+- **Winston** - Structured logging
+- **Express Rate Limit** - Rate limiting
+- **Express Validator** - Input validation
+- **Jest** - Testing framework
 
 ## Project Structure
 
@@ -177,12 +192,121 @@ For detailed API documentation, see [server/README.md](./server/README.md)
 - `npm run build:full` - Build both
 - `npm run lint` - Run ESLint
 - `npm run test` - Run tests
+- `npm run test:watch` - Run tests in watch mode
+- `npm run test:ui` - Open Vitest UI
+- `npm run test:coverage` - Generate coverage report
 
 **Server directory:**
 - `npm run dev` - Start backend in development mode
 - `npm run build` - Build TypeScript to JavaScript
 - `npm start` - Start production server
 - `npm run seed` - Seed database with admin user
+- `npm run test` - Run backend tests with coverage
+- `npm run test:watch` - Run tests in watch mode
+- `npm run lint` - Run ESLint on backend code
+
+## Testing
+
+### Frontend Tests
+```bash
+# Run all tests
+npm run test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with UI
+npm run test:ui
+
+# Generate coverage report
+npm run test:coverage
+```
+
+### Backend Tests
+```bash
+cd server
+
+# Run all tests with coverage
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+```
+
+### Test Structure
+- `src/test/` - Frontend tests
+- `server/src/__tests__/` - Backend tests
+
+## Security Features
+
+- ✅ **JWT Authentication** - Secure token-based authentication with refresh tokens
+- ✅ **Rate Limiting** - Protect against brute force attacks
+  - Auth endpoints: 5 attempts per 15 minutes
+  - Upload endpoints: 20 uploads per hour
+  - General API: 100 requests per 15 minutes
+- ✅ **Input Validation** - Comprehensive validation using express-validator
+- ✅ **File Validation** - Client and server-side file type, size, and content checks
+- ✅ **Security Headers** - Helmet middleware for HTTP security headers
+- ✅ **Password Hashing** - Bcrypt with salt rounds
+- ✅ **CORS Protection** - Configured cross-origin resource sharing
+- ✅ **XSS Prevention** - Input sanitization and validation
+- ✅ **SQL Injection Prevention** - Mongoose ODM with parameterized queries
+
+## CI/CD Pipeline
+
+The project includes comprehensive GitHub Actions workflows:
+
+### Frontend CI
+- Linting with ESLint
+- Type checking with TypeScript
+- Unit and integration tests
+- Build verification
+- Bundle size analysis
+- Runs on: Push to main, Pull requests
+
+### Backend CI
+- Linting with ESLint
+- Type checking with TypeScript
+- Unit and integration tests
+- Build verification
+- Security audit with npm audit
+- Runs on: Push to main, Pull requests
+
+### CodeQL Security Scanning
+- Automated code analysis
+- Security vulnerability detection
+- Runs on: Push, Pull requests, Weekly schedule
+
+### Deployment
+- Automated deployment to Vercel (frontend)
+- Backend deployment (configure Railway/Render/Heroku)
+- Runs on: Push to main branch
+
+### Dependabot
+- Automated dependency updates
+- Weekly checks for frontend and backend
+- Automated security patches
+
+## File Upload Limits
+
+- **Maximum file size**: 50MB
+- **Supported file types**:
+  - Images: JPG, PNG, GIF, WebP, SVG
+  - Documents: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, TXT, CSV, MD
+  - Archives: ZIP, RAR, 7Z, TAR, GZ
+  - Code: JSON, XML, HTML, CSS, JS
+  - Audio: MP3, WAV, OGG
+  - Video: MP4, WebM, OGV
+- **Security**: Dangerous file types (.exe, .bat, etc.) are blocked
+
+## Monitoring & Logging
+
+- **Winston Logger** - Structured logging with multiple transports
+  - Console logging (development)
+  - File logging (error.log, combined.log)
+  - Configurable log levels
+- **Activity Tracking** - All file access and downloads are logged
+- **Error Tracking** - Comprehensive error handling and logging
 
 ## Deployment
 

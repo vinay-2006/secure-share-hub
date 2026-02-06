@@ -20,36 +20,70 @@ export const handlers = [
     });
   }),
 
-  http.post(`${API_URL}/auth/login`, async () => {
-    return HttpResponse.json({
-      success: true,
-      data: {
-        user: {
-          id: 'test-user-id',
-          email: 'user@example.com',
-          name: 'Test User',
-          role: 'user',
+  http.post(`${API_URL}/auth/login`, async ({ request }) => {
+    const body = await request.json() as { email: string; password: string };
+    
+    // Validate credentials
+    if (body.email === 'user@example.com' && body.password === 'user123') {
+      return HttpResponse.json({
+        success: true,
+        data: {
+          user: {
+            userId: 'user-1',
+            email: 'user@example.com',
+            name: 'Alex Chen',
+            role: 'user',
+          },
+          accessToken: 'test-access-token',
+          refreshToken: 'test-refresh-token',
         },
-        accessToken: 'test-access-token',
-        refreshToken: 'test-refresh-token',
+      });
+    }
+    
+    // Return error for invalid credentials
+    return HttpResponse.json(
+      {
+        success: false,
+        error: {
+          message: 'Invalid credentials',
+          code: 'INVALID_CREDENTIALS',
+        },
       },
-    });
+      { status: 401 }
+    );
   }),
 
-  http.post(`${API_URL}/auth/admin/login`, async () => {
-    return HttpResponse.json({
-      success: true,
-      data: {
-        user: {
-          id: 'test-admin-id',
-          email: 'admin@example.com',
-          name: 'Admin User',
-          role: 'admin',
+  http.post(`${API_URL}/auth/admin/login`, async ({ request }) => {
+    const body = await request.json() as { email: string; password: string };
+    
+    // Validate admin credentials
+    if (body.email === 'admin@example.com' && body.password === 'admin123') {
+      return HttpResponse.json({
+        success: true,
+        data: {
+          user: {
+            userId: 'admin-1',
+            email: 'admin@example.com',
+            name: 'Admin User',
+            role: 'admin',
+          },
+          accessToken: 'test-admin-token',
+          refreshToken: 'test-admin-refresh-token',
         },
-        accessToken: 'test-admin-token',
-        refreshToken: 'test-admin-refresh-token',
+      });
+    }
+    
+    // Return error for invalid credentials
+    return HttpResponse.json(
+      {
+        success: false,
+        error: {
+          message: 'Invalid admin credentials',
+          code: 'INVALID_CREDENTIALS',
+        },
       },
-    });
+      { status: 401 }
+    );
   }),
 
   http.post(`${API_URL}/auth/logout`, async () => {

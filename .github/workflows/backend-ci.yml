@@ -16,6 +16,8 @@ jobs:
   lint-and-test:
     name: Type Check, Test, and Build
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout code

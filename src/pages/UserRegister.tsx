@@ -36,8 +36,8 @@ export default function UserRegister() {
       } else {
         toast.error(response.error?.message || 'Registration failed');
       }
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.error?.message || 'An error occurred during registration';
+    } catch (error: unknown) {
+      const errorMessage = (error as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error?.message || 'An error occurred during registration';
       toast.error(errorMessage);
     } finally {
       setLoading(false);

@@ -26,10 +26,10 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
-    const originalRequest: any = error.config;
+    const originalRequest = error.config as typeof error.config & { _retry?: boolean };
 
     // If token expired, try to refresh
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && !originalRequest?._retry) {
       originalRequest._retry = true;
 
       try {

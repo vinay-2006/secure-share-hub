@@ -21,7 +21,7 @@ const mockUsers = new Map([
 ]);
 
 // Generate mock tokens
-const generateToken = () => `mock-token-${Math.random().toString(36).substr(2, 9)}`;
+const generateToken = () => `mock-token-${Math.random().toString(36).substring(2, 11)}`;
 
 export const handlers = [
   // Register

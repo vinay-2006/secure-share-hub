@@ -350,19 +350,23 @@ The frontend is configured for automatic deployment to Vercel:
 
 ## 📊 API Documentation
 
-2. **Install frontend dependencies**
-```bash
-npm install
-```
+### Main Endpoints
 
-3. **Install backend dependencies**
-```bash
-cd server
-npm install
-cd ..
-```
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - User login
+- `POST /api/auth/admin/login` - Admin login
+- `POST /api/auth/refresh` - Refresh access token
+- `GET /api/auth/me` - Get current user
+- `POST /api/auth/logout` - Logout
+- `POST /api/files/upload` - Upload file (requires auth)
+- `GET /api/files` - Get user's files (requires auth)
+- `GET /api/files/access/:token` - Access file by token
+- `GET /api/files/download/:token` - Download file by token
+- `GET /api/admin/stats` - Get system statistics (admin only)
 
-4. **Set up environment variables**
+For detailed API documentation, see [server/README.md](./server/README.md)
+
+## 🤝 Contributing
 
 Create `.env` in the root directory:
 ```env

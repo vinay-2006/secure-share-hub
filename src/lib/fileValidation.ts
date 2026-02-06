@@ -70,7 +70,17 @@ export const validateFileType = (file: File): FileValidationResult => {
  */
 export const validateFileExtension = (file: File): FileValidationResult => {
   const fileName = file.name.toLowerCase();
-  const extension = fileName.substring(fileName.lastIndexOf('.'));
+  const lastDotIndex = fileName.lastIndexOf('.');
+  
+  // Check if file has an extension
+  if (lastDotIndex === -1 || lastDotIndex === fileName.length - 1) {
+    return {
+      valid: false,
+      error: 'File must have a valid extension.',
+    };
+  }
+  
+  const extension = fileName.substring(lastDotIndex);
   
   const allowedExtensions = Object.values(ALLOWED_FILE_TYPES).flat();
   
@@ -88,7 +98,7 @@ export const validateFileExtension = (file: File): FileValidationResult => {
  * Validates file name
  */
 export const validateFileName = (file: File): FileValidationResult => {
-  const fileName = file.name;
+  const fileName = file.name.trim(); // Trim leading/trailing whitespace
   
   // Check file name length
   if (fileName.length > 255) {
@@ -98,12 +108,28 @@ export const validateFileName = (file: File): FileValidationResult => {
     };
   }
   
+  // Check if filename is empty after trimming
+  if (fileName.length === 0) {
+    return {
+      valid: false,
+      error: 'File name cannot be empty',
+    };
+  }
+  
   // Check for special characters (allow letters, numbers, spaces, dots, hyphens, underscores)
   const invalidChars = /[^a-zA-Z0-9\s.\-_]/g;
   if (invalidChars.test(fileName)) {
     return {
       valid: false,
       error: 'File name contains invalid characters. Only letters, numbers, spaces, dots, hyphens, and underscores are allowed.',
+    };
+  }
+  
+  // Check for consecutive spaces
+  if (/\s{2,}/.test(fileName)) {
+    return {
+      valid: false,
+      error: 'File name contains consecutive spaces',
     };
   }
   

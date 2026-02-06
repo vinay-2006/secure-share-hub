@@ -25,6 +25,8 @@ on:
 jobs:
   frontend-ci:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     
     strategy:
       matrix:

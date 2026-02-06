@@ -6,6 +6,7 @@ import path from 'path';
 import { config } from './config/config';
 import { connectDatabase } from './config/database';
 import { errorHandler } from './middleware/errorHandler';
+import { generalLimiter } from './middleware/rateLimiter';
 import authRoutes from './routes/auth.routes';
 import fileRoutes from './routes/file.routes';
 import adminRoutes from './routes/admin.routes';
@@ -25,6 +26,9 @@ app.use(cors({
 app.use(morgan('dev')); // Logging
 app.use(express.json()); // Parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+
+// Apply general rate limiting to all routes
+app.use('/api', generalLimiter);
 
 // Routes
 app.use('/api/auth', authRoutes);

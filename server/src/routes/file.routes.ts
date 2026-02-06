@@ -12,10 +12,11 @@ import {
 import { authenticate } from '../middleware/auth';
 import { upload } from '../middleware/upload';
 import { uploadFileValidation, fileIdValidation, tokenValidation } from '../utils/validators';
+import { uploadLimiter } from '../middleware/rateLimiter';
 
 const router = express.Router();
 
-router.post('/upload', authenticate, upload.single('file'), uploadFileValidation, uploadFile);
+router.post('/upload', uploadLimiter, authenticate, upload.single('file'), uploadFileValidation, uploadFile);
 router.get('/', authenticate, getUserFiles);
 router.get('/access/:token', tokenValidation, accessFileByToken);
 router.get('/download/:token', tokenValidation, downloadFileByToken);

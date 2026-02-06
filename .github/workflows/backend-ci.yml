@@ -1,0 +1,57 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'server/**'
+      - '.github/workflows/backend-ci.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'server/**'
+      - '.github/workflows/backend-ci.yml'
+
+jobs:
+  lint-and-test:
+    name: Type Check, Test, and Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./server
+        run: npm ci
+
+      - name: Run TypeScript type check
+        working-directory: ./server
+        run: npx tsc --noEmit
+
+      - name: Run tests
+        working-directory: ./server
+        run: npm test
+        if: hashFiles('server/src/__tests__/**') != ''
+
+      - name: Build backend
+        working-directory: ./server
+        run: npm run build
+
+      - name: Run security audit
+        working-directory: ./server
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+
+      - name: Check for vulnerabilities
+        working-directory: ./server
+        run: |
+          echo "### Security Audit Report" >> $GITHUB_STEP_SUMMARY
+          npm audit --json | jq -r '.vulnerabilities | to_entries[] | "\(.key): \(.value.severity)"' >> $GITHUB_STEP_SUMMARY || echo "No vulnerabilities found" >> $GITHUB_STEP_SUMMARY

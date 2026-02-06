@@ -9,11 +9,12 @@ import {
 } from '../controllers/admin.controller';
 import { authenticate, isAdmin } from '../middleware/auth';
 import { fileIdValidation, userIdValidation, roleUpdateValidation } from '../utils/validators';
+import { adminLimiter } from '../middleware/rateLimiter';
 
 const router = express.Router();
 
 // All admin routes require authentication and admin role
-router.use(authenticate, isAdmin);
+router.use(adminLimiter, authenticate, isAdmin);
 
 router.get('/stats', getAdminStats);
 router.get('/users', getAllUsers);

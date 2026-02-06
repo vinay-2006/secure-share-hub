@@ -1,8 +1,8 @@
 import express from 'express';
-import { register, login, adminLogin, refresh, getCurrentUser, logout } from '../controllers/auth.controller';
+import { register, login, adminLogin, refresh, getCurrentUser, logout, requestPasswordReset, resetPassword } from '../controllers/auth.controller';
 import { authenticate } from '../middleware/auth';
 import { authRateLimiter } from '../middleware/rateLimiter';
-import { registerValidation, loginValidation } from '../utils/validators';
+import { registerValidation, loginValidation, requestPasswordResetValidation, resetPasswordValidation } from '../utils/validators';
 
 const router = express.Router();
 
@@ -13,5 +13,9 @@ router.post('/admin/login', authRateLimiter, loginValidation, adminLogin);
 router.post('/refresh', refresh);
 router.get('/me', authenticate, getCurrentUser);
 router.post('/logout', logout);
+
+// Password reset endpoints
+router.post('/password/reset-request', authRateLimiter, requestPasswordResetValidation, requestPasswordReset);
+router.post('/password/reset', authRateLimiter, resetPasswordValidation, resetPassword);
 
 export default router;

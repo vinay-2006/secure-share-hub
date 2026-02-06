@@ -62,6 +62,26 @@ This project is built with:
 
 ## How can I deploy this project?
 
+### Deploy to Vercel (Recommended)
+
+This project is optimized for deployment on Vercel. You have two options:
+
+**Option 1: Quick Deploy (via GitHub)**
+1. Push your code to GitHub
+2. Visit [Vercel](https://vercel.com) and import your repository
+3. Vercel will auto-detect the configuration and deploy
+
+**Option 2: Deploy via CLI**
+```bash
+npm install -g vercel
+vercel login
+vercel --prod
+```
+
+📖 **[Read the complete deployment guide](./DEPLOYMENT.md)** for detailed instructions, troubleshooting, and configuration options.
+
+### Deploy via Lovable
+
 Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
 
 ## Can I connect a custom domain to my Lovable project?

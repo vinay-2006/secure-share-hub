@@ -1,0 +1,46 @@
+name: CD - Deploy Backend
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy-backend:
+    name: Deploy Backend
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    environment:
+      name: production
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'server/package-lock.json'
+      
+      - name: Install backend dependencies
+        working-directory: ./server
+        run: npm ci
+      
+      - name: Build backend
+        working-directory: ./server
+        run: npm run build
+      
+      - name: Deploy to production
+        run: |
+          echo "Backend deployment step"
+          echo "Configure this based on your hosting platform (Railway, Render, AWS, etc.)"
+          echo "Example: rsync, docker push, or platform-specific CLI"
+        # Add your deployment commands here
+        # Examples:
+        # - Railway: railway up
+        # - Render: render deploy
+        # - Heroku: git push heroku main
+        # - Docker: docker build && docker push

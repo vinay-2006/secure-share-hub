@@ -1,8 +1,21 @@
 import { body, param, ValidationChain } from 'express-validator';
 
+// Password strength validation helper
+export const isStrongPassword = (password: string): boolean => {
+  // Minimum 8 characters, at least one uppercase, one lowercase, one number, one special character, and no spaces
+  const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^()_+\-=\[\]{};':"\\|,.<>\/])(?!.*\s)[A-Za-z\d@$!%*?&#^()_+\-=\[\]{};':"\\|,.<>\/]{8,}$/;
+  return strongPasswordRegex.test(password);
+};
+
 export const registerValidation: ValidationChain[] = [
   body('email').isEmail().normalizeEmail().withMessage('Valid email is required'),
-  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+  body('password')
+    .custom((password) => {
+      if (!isStrongPassword(password)) {
+        throw new Error('Password must be at least 8 characters and include uppercase, lowercase, number, and special character');
+      }
+      return true;
+    }),
   body('name').trim().notEmpty().withMessage('Name is required'),
 ];
 
@@ -31,4 +44,19 @@ export const userIdValidation: ValidationChain[] = [
 
 export const roleUpdateValidation: ValidationChain[] = [
   body('role').isIn(['user', 'admin']).withMessage('Role must be user or admin'),
+];
+
+export const requestPasswordResetValidation: ValidationChain[] = [
+  body('email').isEmail().normalizeEmail().withMessage('Valid email is required'),
+];
+
+export const resetPasswordValidation: ValidationChain[] = [
+  body('token').notEmpty().withMessage('Reset token is required'),
+  body('newPassword')
+    .custom((password) => {
+      if (!isStrongPassword(password)) {
+        throw new Error('Password must be at least 8 characters and include uppercase, lowercase, number, and special character');
+      }
+      return true;
+    }),
 ];

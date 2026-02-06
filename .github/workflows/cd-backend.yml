@@ -9,6 +9,8 @@ jobs:
   deploy-backend:
     name: Deploy Backend
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     environment:
       name: production
     

@@ -1,0 +1,8 @@
+
+# MongoDB Memory Server binaries
+.mongodb-binaries/
+.mongodb-memory-server.json
+
+# gitignore content
+node_modules/
+dist/

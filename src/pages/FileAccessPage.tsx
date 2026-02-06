@@ -1,0 +1,125 @@
+import { useMemo } from 'react';
+import { useSearchParams, useParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Shield, Download, Ban, Clock, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useFiles } from '@/lib/file-context';
+import { formatFileSize, getFileIcon, getTimeRemaining } from '@/lib/mock-data';
+import { toast } from 'sonner';
+
+export default function FileAccessPage() {
+  const { fileId } = useParams<{ fileId: string }>();
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get('token');
+  const { files, updateFile, addActivity } = useFiles();
+
+  const file = useMemo(() => files.find(f => f.id === fileId), [files, fileId]);
+
+  const accessStatus = useMemo(() => {
+    if (!file) return { allowed: false, reason: 'File not found' };
+    if (!token || token !== file.accessToken) return { allowed: false, reason: 'Invalid access token' };
+    if (file.status === 'revoked') return { allowed: false, reason: 'This link has been revoked' };
+    if (new Date(file.expiryTimestamp).getTime() < Date.now()) return { allowed: false, reason: 'This link has expired' };
+    if (file.maxDownloads > 0 && file.usedDownloads >= file.maxDownloads) return { allowed: false, reason: 'Download limit reached' };
+    return { allowed: true, reason: 'Access granted' };
+  }, [file, token]);
+
+  const handleDownload = () => {
+    if (!file || !accessStatus.allowed) return;
+    updateFile(file.id, { usedDownloads: file.usedDownloads + 1 });
+    addActivity({
+      id: Math.random().toString(36).substring(2),
+      fileId: file.id,
+      timestamp: new Date().toISOString(),
+      eventType: 'download_success',
+      status: 'success',
+      details: 'File downloaded by token holder',
+    });
+    toast.success('Download started', { description: file.name });
+  };
+
+  return (
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="w-full max-w-md"
+      >
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center gap-2 mb-4">
+            <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center">
+              <Shield className="w-5 h-5 text-primary-foreground" />
+            </div>
+            <span className="text-lg font-semibold text-foreground">VaultDrop</span>
+          </div>
+        </div>
+
+        <div className="rounded-xl border bg-card p-6 card-shadow">
+          {!file ? (
+            <div className="text-center py-8">
+              <AlertTriangle className="w-12 h-12 mx-auto mb-3 text-warning" />
+              <h2 className="text-lg font-semibold text-foreground">File Not Found</h2>
+              <p className="text-sm text-muted-foreground mt-1">This file may have been removed or the link is incorrect.</p>
+            </div>
+          ) : !accessStatus.allowed ? (
+            <div className="text-center py-8">
+              <Ban className="w-12 h-12 mx-auto mb-3 text-destructive" />
+              <h2 className="text-lg font-semibold text-foreground">Access Denied</h2>
+              <p className="text-sm text-muted-foreground mt-2">{accessStatus.reason}</p>
+
+              <div className="mt-6 p-4 rounded-lg bg-muted/50 text-left space-y-2">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">{getFileIcon(file.type)}</span>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">{file.name}</p>
+                    <p className="text-xs text-muted-foreground">{formatFileSize(file.size)}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-5">
+              <div className="text-center">
+                <CheckCircle2 className="w-12 h-12 mx-auto mb-3 text-success" />
+                <h2 className="text-lg font-semibold text-foreground">File Ready</h2>
+                <p className="text-sm text-muted-foreground mt-1">Your file is available for download.</p>
+              </div>
+
+              <div className="p-4 rounded-lg bg-muted/50 space-y-3">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">{getFileIcon(file.type)}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground truncate">{file.name}</p>
+                    <p className="text-xs text-muted-foreground">{formatFileSize(file.size)}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1">
+                    <Clock className="w-3.5 h-3.5" />
+                    {getTimeRemaining(file.expiryTimestamp)} left
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Download className="w-3.5 h-3.5" />
+                    {file.maxDownloads === 0
+                      ? `${file.usedDownloads} downloads`
+                      : `${file.usedDownloads} / ${file.maxDownloads}`}
+                  </span>
+                </div>
+              </div>
+
+              <Button className="w-full" onClick={handleDownload}>
+                <Download className="w-4 h-4 mr-2" />
+                Download File
+              </Button>
+
+              <p className="text-xs text-center text-muted-foreground">
+                This is a secure link. Do not share with unauthorized parties.
+              </p>
+            </div>
+          )}
+        </div>
+      </motion.div>
+    </div>
+  );
+}

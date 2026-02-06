@@ -7,6 +7,8 @@ import { Input } from '@/components/ui/input';
 import { authAPI } from '@/services/api';
 import { toast } from 'sonner';
 
+const MIN_PASSWORD_LENGTH = 6;
+
 export default function UserRegister() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -18,8 +20,8 @@ export default function UserRegister() {
     e.preventDefault();
     
     // Validate password length (minimum 6 characters as per backend requirement)
-    if (password.length < 6) {
-      toast.error('Password must be at least 6 characters');
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      toast.error(`Password must be at least ${MIN_PASSWORD_LENGTH} characters`);
       return;
     }
 
@@ -112,7 +114,7 @@ export default function UserRegister() {
                   placeholder="Minimum 6 characters"
                   className="pl-10"
                   required
-                  minLength={6}
+                  minLength={MIN_PASSWORD_LENGTH}
                 />
               </div>
             </div>

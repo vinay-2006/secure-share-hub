@@ -53,7 +53,7 @@ export const ALLOWED_FILE_TYPES = {
 // Dangerous file extensions that should be blocked
 const DANGEROUS_EXTENSIONS = [
   '.exe', '.bat', '.cmd', '.com', '.pif', '.scr', 
-  '.vbs', '.vbe', '.js', '.jse', '.wsf', '.wsh',
+  '.vbs', '.vbe', '.jse', '.wsf', '.wsh',
   '.msi', '.dll', '.app', '.deb', '.dmg', '.pkg'
 ];
 
@@ -67,7 +67,17 @@ export interface FileValidationResult {
  * Validate file type based on MIME type and extension
  */
 export function validateFileType(file: File): FileValidationResult {
-  const extension = '.' + file.name.split('.').pop()?.toLowerCase();
+  const fileParts = file.name.split('.');
+  
+  // Check if file has an extension
+  if (fileParts.length < 2 || !fileParts[fileParts.length - 1]) {
+    return {
+      valid: false,
+      error: 'File must have a valid extension',
+    };
+  }
+  
+  const extension = '.' + fileParts.pop()!.toLowerCase();
   
   // Check for dangerous extensions
   if (DANGEROUS_EXTENSIONS.includes(extension)) {

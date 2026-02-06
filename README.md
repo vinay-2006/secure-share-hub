@@ -5,6 +5,8 @@
 [![CodeQL](https://github.com/vinay-2006/secure-share-hub/workflows/CodeQL/badge.svg)](https://github.com/vinay-2006/secure-share-hub/actions/workflows/codeql.yml)
 [![Deploy](https://github.com/vinay-2006/secure-share-hub/workflows/Deploy/badge.svg)](https://github.com/vinay-2006/secure-share-hub/actions/workflows/deploy.yml)
 
+> **Note**: If you fork this repository, update the GitHub Actions badge URLs to match your repository URL.
+
 A production-ready, full-stack secure file sharing application with end-to-end encryption, access control, and activity tracking.
 
 ## Features

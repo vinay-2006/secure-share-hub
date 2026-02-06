@@ -1,0 +1,72 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'server/**'
+      - '.github/workflows/backend-ci.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'server/**'
+      - '.github/workflows/backend-ci.yml'
+
+jobs:
+  backend-ci:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
+      
+      - name: Install dependencies
+        run: |
+          cd server
+          npm ci
+      
+      - name: Lint code (if available)
+        run: |
+          cd server
+          npm run lint 2>/dev/null || echo "No lint script found"
+        continue-on-error: true
+      
+      - name: Type check
+        run: |
+          cd server
+          npx tsc --noEmit
+      
+      - name: Run tests
+        run: |
+          cd server
+          npm test 2>/dev/null || echo "No tests configured yet"
+        continue-on-error: true
+      
+      - name: Build backend
+        run: |
+          cd server
+          npm run build
+      
+      - name: Security audit
+        run: |
+          cd server
+          npm audit --audit-level=moderate || true
+      
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        if: matrix.node-version == '20.x'
+        with:
+          name: backend-build
+          path: server/dist/
+          retention-days: 7

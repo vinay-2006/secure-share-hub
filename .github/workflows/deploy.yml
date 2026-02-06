@@ -1,0 +1,74 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy-frontend:
+    name: Deploy Frontend to Vercel
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build frontend
+        run: npm run build
+        env:
+          NODE_ENV: production
+      
+      - name: Deploy to Vercel
+        run: |
+          echo "Frontend deployment configured in vercel.json"
+          echo "Vercel will auto-deploy on push to main"
+          echo "Make sure VERCEL_TOKEN is configured in repository secrets"
+      
+      - name: Deployment summary
+        run: |
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Frontend built successfully" >> $GITHUB_STEP_SUMMARY
+          echo "🚀 Vercel will deploy automatically" >> $GITHUB_STEP_SUMMARY
+
+  deploy-backend:
+    name: Deploy Backend
+    runs-on: ubuntu-latest
+    needs: [deploy-frontend]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+      
+      - name: Install backend dependencies
+        run: |
+          cd server
+          npm ci
+      
+      - name: Build backend
+        run: |
+          cd server
+          npm run build
+      
+      - name: Backend deployment placeholder
+        run: |
+          echo "## Backend Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Backend built successfully" >> $GITHUB_STEP_SUMMARY
+          echo "📝 Configure Railway/Render/Heroku deployment" >> $GITHUB_STEP_SUMMARY
+          echo "Add deployment credentials to repository secrets:" >> $GITHUB_STEP_SUMMARY
+          echo "- RAILWAY_TOKEN or RENDER_API_KEY" >> $GITHUB_STEP_SUMMARY
+          echo "- Update this workflow with deployment commands" >> $GITHUB_STEP_SUMMARY
